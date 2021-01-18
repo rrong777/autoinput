@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.goods.DeliveryMapper">
+    <resultMap id="deliveyMap" type="com.dao.goods.Delivery">
+        <id column="id" property="id"></id>
+        <result column="check_num" property="checkNum"></result>
+        <result column="check_date" property="checkDate"></result>
+        <result column="goods" property="goods"></result>
+        <result column="origin" property="origin"></result>
+        <result column="transport" property="transport"></result>
+        <result column="import_business" property="importBusiness"></result>
+        <result column="weight" property="weight"></result>
+        <result column="update_time" property="updateTime"></result>
+        <result column="update_by" property="updateBy"></result>
+        <result column="apply_num" property="applyNum"></result>
+        <result column="receiving_unit" property="receivingUnit"></result>
+        <result column="goods_type" property="goodsType"></result>
+        <result column="already_delivery_weight" property="alreadyDeliveryWeight"></result>
+        <result column="final_delivery_date" property="finalDeliveryDate"></result>
+        <result column="delivery_status" property="deliveryStatus"></result>
+        <result column="status" property="status"></result>
+    </resultMap>
+
+<!--    <collection property="noticeUserId" column="team_id" select="selectNoticeUserId"></collection>-->
+    <resultMap id="detailsMap" type="com.dao.goods.DeliveryDetails">
+        <id column="id" property="id"></id>
+        <result column="check_num" property="checkNum"></result>
+        <result column="check_date" property="checkDate"></result>
+        <result column="ciq" property="ciq"></result>
+        <result column="licence" property="licence"></result>
+        <result column="goods_ch_name" property="goodsChName"></result>
+        <result column="goods_varieties" property="goodsVarieties"></result>
+        <result column="weight" property="weight"></result>
+        <result column="transport_weight" property="transportWeight"></result>
+        <result column="origin" property="origin"></result>
+        <result column="delivery_weight" property="deliveryWeight"></result>
+        <result column="transport_type" property="transportType"></result>
+        <result column="transport_tools" property="transportTools"></result>
+        <result column="transport_tools_num" property="transportToolsNum"></result>
+        <result column="delivery_unit_name" property="deliveryUnitName"></result>
+        <result column="delivery_unit_pos" property="deliveryUnitPos"></result>
+        <result column="receive_unit_name" property="receiveUnitName"></result>
+        <result column="receive_unit_pos" property="receiveUnitPos"></result>
+        <result column="transport_plan" property="transportPlan"></result>
+        <result column="delivery_status" property="deliveryStatus"></result>
+        <result column="apply_num" property="applyNum"></result>
+    </resultMap>
+    <select id="findDeliveryDetails" parameterType="java.lang.String" resultType="com.dao.goods.AutoInputDetails">
+        select id, inspection_id as inspectionId, odd_numbers as oddNumbers, send_date as sendDate,
+               "陆运" as modeTransport, "粮食专用车" as machineTransport, no_transport as noTransport,
+               send_weight as sendWeight, no_container as noContainer, send_num as sendNum,
+               send_desc as sendDesc, created_at as createdAt,apply_num as applyNum
+        from
+            auto_input_details
+        where
+            apply_num = #{applyNum}
+
+    </select>
+    <delete id="deleteUser">
+        delete from grant_user where id =#{id}
+    </delete>
+    <select id="getUserPasw" resultType="java.util.Map">
+        select username, password from grant_user
+        order by id desc
+        limit 1
+    </select>
+    <select id="listGrantUser" resultType="java.util.Map" parameterType="java.util.Map">
+        select id,username,password from grant_user
+        <if test="params.key != null and params.key != ''">
+            where username like concat('%',#{params.key},'%')
+        </if>
+    </select>
+
+    <insert id="addAutoInputDetails">
+        insert into auto_input_details(apply_num, send_date, no_transport,send_weight, send_num, created_at,status)
+        values
+            <foreach collection="params" separator="," item="item" >
+               ( #{item.InspectionNumber},#{item.DeliveryTime},#{item.VehicleNumber},#{item.Weight},#{item.Pcs},#{time}, 1)
+            </foreach>
+
+    </insert>
+    <insert id="add" parameterType="java.util.Map">
+        insert ignore into grant_user(username, password) values(#{username}, #{password})
+    </insert>
+
+
+    <select id="getAutoInputDetails" resultType="com.dao.goods.DetailsParams">
+        select apply_num InspectionNumber, send_date DeliveryTime, no_transport VehicleNumber,send_weight Weight,send_num Pcs from auto_input_details
+        where created_at = #{createTime}
+    </select>
+
+    <select id="getDetailsByApplyNum"  resultMap="detailsMap" >
+        select * from delivery_details where apply_num = #{applyNum}
+    </select>
+    <select id="list" resultMap="deliveyMap" parameterType="java.util.Map">
+        select
+            `id`, check_num,check_date,goods,origin,transport,import_business,
+            weight,update_time,update_by,`status`,apply_num,receiving_unit,goods_type,already_delivery_weight,
+            final_delivery_date,delivery_status
+        from
+            delivery_list
+        where
+            1=1
+        <if test="params.status != null and params.status == 1">
+            and apply_num in (select apply_num from auto_input_details)
+        </if>
+        <if test="params.key != null and params.key != ''">
+            and import_business like concat('%',#{params.key},'%')
+        </if>
+    </select>
+    <insert id="batchInsertDetails" parameterType="java.util.List">
+        insert into delivery_details
+            (check_num, check_date, ciq, licence, goods_ch_name, goods_varieties, weight, transport_weight,
+            origin,delivery_weight,transport_type,transport_tools,transport_tools_num,delivery_unit_name,
+            delivery_unit_pos,receive_unit_name,receive_unit_pos,transport_plan,delivery_status,apply_num, created_at, updated_at)
+        values
+            <foreach collection="list" item="item" separator=",">
+                (#{item.checkNum},#{item.checkDate},#{item.ciq},#{item.licence},#{item.goodsChName},#{item.goodsVarieties},
+                #{item.weight},#{item.transportWeight},
+                #{item.origin},#{item.deliveryWeight},#{item.transportType},#{item.transportTools},#{item.transportToolsNum},
+                #{item.deliveryUnitName},#{item.deliveryUnitPos},
+                #{item.receiveUnitName},#{item.receiveUnitPos},#{item.transportPlan},#{item.deliveryStatus},#{item.applyNum},
+                #{time}, #{time})
+            </foreach>
+        ON DUPLICATE KEY UPDATE
+            check_num=values(check_num),
+            check_date=values(check_date),
+            ciq=values(ciq),
+            licence=values(licence),
+            goods_ch_name=values(goods_ch_name),
+            goods_varieties=values(goods_varieties),
+            weight=values(weight),
+            transport_weight=values(transport_weight),
+            origin=values(origin),
+            delivery_weight=values(delivery_weight),
+            transport_type=values(transport_type),
+            transport_tools=values(transport_tools),
+            transport_tools_num=values(transport_tools_num),
+            delivery_unit_name=values(delivery_unit_name),
+            delivery_unit_pos=values(delivery_unit_pos),
+            receive_unit_name=values(receive_unit_name),
+            receive_unit_pos=values(receive_unit_pos),
+            transport_plan=values(transport_plan),
+            delivery_status=values(delivery_status),
+            updated_at=values(updated_at)
+    </insert>
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into delivery_list
+            (check_num,check_date,goods,origin,transport,
+            import_business,weight,update_time,update_by,
+            apply_num,receiving_unit,goods_type,already_delivery_weight,
+            final_delivery_date,delivery_status,created_at,updated_at)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.checkNum}, #{item.checkDate},#{item.goods},#{item.origin},#{item.transport},
+            #{item.importBusiness},#{item.weight},#{item.updateTime},#{item.updateBy},
+            #{item.applyNum},#{item.receivingUnit},#{item.goodsType},#{item.alreadyDeliveryWeight},
+            #{item.finalDeliveryDate},#{item.deliveryStatus},#{time},#{time})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            check_date=values(check_date),
+            goods=values(goods),
+            origin=values(origin),
+            transport=values(transport),
+            import_business=values(import_business),
+            weight=values(weight),
+            update_time=values(update_time),
+            update_by=values(update_by),
+            apply_num=values(apply_num),
+            receiving_unit=values(receiving_unit),
+            goods_type=values(goods_type),
+            already_delivery_weight=values(already_delivery_weight),
+            final_delivery_date=values(final_delivery_date),
+            delivery_status=values(delivery_status),
+            updated_at=values(updated_at)
+    </insert>
+</mapper>
