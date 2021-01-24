@@ -38,7 +38,7 @@ public class DriverManage {
             headless = true;
             pathSuffix = "chromedriver_linux";
         } else {
-            headless = true;
+            headless = false;
             if(osName.indexOf("mac") != -1) {
                 pathSuffix = "chromedriver_mac";
             } else if(osName.indexOf("windows") != -1) {

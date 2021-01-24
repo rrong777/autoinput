@@ -389,6 +389,15 @@ public class AutomationUtils extends DriverManage {
 
                     this.inputForm(driver, tmpParams.getDeliveryTime(), tmpParams.getVehicleNumber(),
                             tmpParams.getWeight(), tmpParams.getPcs());
+                    try {
+                        if(autoInputParams.get(autoInputParams.size() - 1) == tmpParams) {
+                            Thread.sleep(5000);
+                        } else {
+                            Thread.sleep(2000);
+                        }
+                    } catch (Exception e) {
+                        log.info("线程休眠异常！！！");
+                    }
                 }
                 switchWindow(driver, true);
             }
@@ -419,8 +428,14 @@ public class AutomationUtils extends DriverManage {
             WebElement dateInput = driver.findElement(By.cssSelector(dateInputSelector));
             dateInput.clear();
             dateInput.sendKeys(datetimeArr[0]);
-            driver.findElement(By.cssSelector(hourSelectSelector)).sendKeys(datetimeArr[1] + ":");
-            driver.findElement(By.cssSelector(minutesSelectSelector)).sendKeys(datetimeArr[2]);
+            Select hourSelect = new Select(driver.findElement(By.cssSelector(hourSelectSelector)));
+            hourSelect.selectByValue(datetimeArr[1] + ":");
+//            hourSelect.selectByVisibleText(datetimeArr[1] + ":");
+//            driver.findElement(By.cssSelector(hourSelectSelector)).sendKeys(datetimeArr[1] + ":");
+            Select minutesSelect = new Select(driver.findElement(By.cssSelector(minutesSelectSelector)));
+            minutesSelect.selectByValue(datetimeArr[2]);
+//            minutesSelect.selectByVisibleText(datetimeArr[2]);
+
         }
 
         Select typeSelect = new Select(driver.findElement(By.cssSelector(transportTypeSelector)));

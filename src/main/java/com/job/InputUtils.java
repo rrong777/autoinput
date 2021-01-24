@@ -125,8 +125,10 @@ public class InputUtils {
                     for (int j=0;j<colnum;j++){
                         cellData = (String) getCellFormatValue(row.getCell(j));
                         if(columns[j].equals("Weight")) {
-                            DecimalFormat format = new DecimalFormat("#.00");
-                            cellData = format.format(Double.valueOf(cellData));
+                            DecimalFormat format = new DecimalFormat("#0.00");
+//                            单位换算
+//                            cellData = format.format(Double.valueOf(cellData));
+                            cellData = format.format(Double.valueOf(cellData) / 1000);
                         }
                         if(columns[j].equals("DeliveryTime")) {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
