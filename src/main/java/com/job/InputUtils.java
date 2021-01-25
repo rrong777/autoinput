@@ -86,13 +86,13 @@ public class InputUtils {
     public static void main(String[] args) {
         try {
             InputUtils inputUtils = new InputUtils();
-            inputUtils.readExcelGetObj("D:\\autologin\\back\\xmciq\\xmciq\\11.xlsx");
+            inputUtils.readExcelGetObj("D:\\autologin\\back\\xmciq\\xmciq\\11.xlsx", 1);
         } catch (Exception e) {
 
         }
 
     }
-    public List<Map<String,String>> readExcelGetObj(String filePath) throws Exception {
+    public List<Map<String,String>> readExcelGetObj(String filePath, Integer tonRatio) throws Exception {
         Workbook wb =null;
         Sheet sheet = null;
         Row row = null;
@@ -128,7 +128,7 @@ public class InputUtils {
                             DecimalFormat format = new DecimalFormat("#0.00");
 //                            单位换算
 //                            cellData = format.format(Double.valueOf(cellData));
-                            cellData = format.format(Double.valueOf(cellData) / 1000);
+                            cellData = format.format(Double.valueOf(cellData) / tonRatio);
                         }
                         if(columns[j].equals("DeliveryTime")) {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -194,10 +194,14 @@ public class InputUtils {
         return cellValue;
     }
 
-    public void autoInputDetailsSingleFile(String movePath, DeliveryMapper deliveryMapper, String filepath, DeliveryService deliveryService, String username, String password) {
+    public boolean autoInputDetailsSingleFile(String movePath, DeliveryMapper deliveryMapper,
+                                              String filepath, DeliveryService deliveryService,
+                                              String username, String password, Integer tonRatio) {
         File[] files = listFiles(filepath);
         AutomationUtils automationUtils = new AutomationUtils(deliveryService,username, password);
-        if(files != null) {
+        // 是否爬虫
+        boolean crawlOrNot = files != null && files.length != 0;
+        if(crawlOrNot) {
             for(int i = 0;i < files.length;i++) {
                 String createTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
                 File file = files[i];
@@ -209,7 +213,7 @@ public class InputUtils {
                     List<Map<String,String>> list = null;
                     // 读取xls文件
                     try {
-                        list  = readExcelGetObj(file.getAbsolutePath());
+                        list  = readExcelGetObj(file.getAbsolutePath(), tonRatio);
                         logger.info("-------读取文件成功！读取文件：" + file.getAbsolutePath());
                         logger.info("-------读取:" + list.size() + "条文件");
                     } catch (Exception e) {
@@ -244,6 +248,7 @@ public class InputUtils {
                 logger.info("关闭chrome异常出错!");
             }
         }
+        return crawlOrNot;
     }
 
 }

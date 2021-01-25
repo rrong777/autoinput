@@ -2,7 +2,6 @@ package com.job;
 
 
 import com.dao.goods.DeliveryMapper;
-import com.dao.goods.DetailsParams;
 import com.service.goods.DeliveryService;
 import com.utils.AutomationUtils;
 import org.slf4j.Logger;
@@ -13,10 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +33,9 @@ public class DeliveryJob {
     private String filepath;
     @Value("${movepath}")
     private String movepath;
+    // 吨比例
+    @Value("${tonRatio}")
+    private String tonRatio;
     @Autowired
     private DeliveryMapper deliveryMapper;
     // 半夜12：30跑一次 爬取发货列表
@@ -49,15 +48,18 @@ public class DeliveryJob {
         long end = System.currentTimeMillis();
     }
 
-    @Scheduled(cron = "0 0 12-20/2 * * ?")
+    @Scheduled(cron = "0 0 8-20/2 * * ?")
     public void autoInput1()  {
         // 获得账号密码
         Map<String, String> map = deliveryMapper.getUserPasw();
         String username = map.get("username");
         String password = map.get("password");
         InputUtils inputUtils = new InputUtils();
-        inputUtils.autoInputDetailsSingleFile(movepath,deliveryMapper,filepath, deliveryService, username, password);
-        crawlDelivery(username, password);
+        boolean crawlOrNot = inputUtils.autoInputDetailsSingleFile(movepath,deliveryMapper,filepath, deliveryService, username, password, tonRatio);
+        if(crawlOrNot) {
+            crawlDelivery(username, password);
+        }
+
     }
 
 //    @Scheduled()
