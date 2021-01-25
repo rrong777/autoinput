@@ -35,7 +35,7 @@ public class DeliveryJob {
     private String movepath;
     // 吨比例
     @Value("${tonRatio}")
-    private String tonRatio;
+    private Integer tonRatio;
     @Autowired
     private DeliveryMapper deliveryMapper;
     // 半夜12：30跑一次 爬取发货列表
