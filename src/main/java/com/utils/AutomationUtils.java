@@ -388,8 +388,9 @@ public class AutomationUtils extends DriverManage {
                     addButton.click();
 
                     this.inputForm(driver, tmpParams.getDeliveryTime(), tmpParams.getVehicleNumber(),
-                            tmpParams.getWeight(), tmpParams.getPcs());
+                            tmpParams.getWeight(), tmpParams.getPcs(), tmpParams.getInspectionNumber());
                     try {
+                        // 最后一个休眠五秒 因为要关闭页面
                         if(autoInputParams.get(autoInputParams.size() - 1) == tmpParams) {
                             Thread.sleep(5000);
                         } else {
@@ -410,7 +411,12 @@ public class AutomationUtils extends DriverManage {
         driver.findElement(By.xpath("//a[text() = '首页']")).click();
     }
 
-    private  void  inputForm(ChromeDriver driver, String deliveryTime, String noTransport, Double weight, Integer pcs) {
+    private  void  inputForm(ChromeDriver driver,
+                             String deliveryTime,
+                             String noTransport,
+                             Double weight,
+                             Integer pcs,
+                             String inspectNum) {
         deliveryTime = StringUtils.isBlank(deliveryTime) ? "" : deliveryTime.trim();
         noTransport = StringUtils.isBlank(noTransport) ? "" : noTransport.trim();
         String weightStr = "";
@@ -446,7 +452,7 @@ public class AutomationUtils extends DriverManage {
         driver.findElement(By.cssSelector(deleverGood)).sendKeys(weightStr);
         driver.findElement(By.cssSelector(vehiclesCount)).sendKeys(pcsStr);
         driver.findElement(By.xpath("//a[text() = '保存']")).click();
-
+        deliveryService.alterStatus(inspectNum, deliveryTime, weight, noTransport);
     }
 
 

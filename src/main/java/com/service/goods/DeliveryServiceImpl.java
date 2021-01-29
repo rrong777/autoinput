@@ -37,6 +37,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         return MybatisPageHelper.findPage(pageRequest, deliveryMapper, "list", pageRequest.getParams());
     }
 
+
+
     @Override
     public Integer deleteUser(Integer id) {
         return deliveryMapper.deleteUser(id);
@@ -46,6 +48,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Integer addAutoInputDetails(List<Map<String,String>> params) {
         String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         return deliveryMapper.addAutoInputDetails(params, time);
+    }
+
+    @Override
+    public Integer alterStatus(String applyNum, String sendDate, Double sendWeight, String plateNo) {
+        return deliveryMapper.alterStatus(applyNum, sendDate, sendWeight, plateNo);
     }
 
     @Override

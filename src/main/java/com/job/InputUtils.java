@@ -34,14 +34,14 @@ public class InputUtils {
             }
         }
     }
-    public File[] listFiles(String path) {
+    public static File[] listFiles(String path) {
         File file = new File(path);
         if(file.isDirectory()) {
             return file.listFiles();
         }
         return null;
     }
-    private Map<String, List<DetailsParams>> constructInputData(List<DetailsParams> params, DeliveryService deliveryService) {
+    public static Map<String, List<DetailsParams>> constructInputData(List<DetailsParams> params, DeliveryService deliveryService) {
         Map<String, List<DetailsParams>> autoInputMaps = new HashMap<>();
         for(int i = 0;i < params.size();i++) {
             DetailsParams tmp = params.get(i);
@@ -92,7 +92,7 @@ public class InputUtils {
         }
 
     }
-    public List<Map<String,String>> readExcelGetObj(String filePath, Integer tonRatio) throws Exception {
+    public static List<Map<String,String>> readExcelGetObj(String filePath, Integer tonRatio) throws Exception {
         Workbook wb =null;
         Sheet sheet = null;
         Row row = null;
@@ -221,14 +221,14 @@ public class InputUtils {
                         logger.info(e.getMessage());
                     }
                     if(!Collections.isEmpty(list)) {
-                        deliveryMapper.addAutoInputDetails(list, createTime);
-                        logger.info("插入数据库成功！！");
-                        List<DetailsParams> params = deliveryMapper.getAutoInputDetails(createTime);
-                        Map<String, List<DetailsParams>> autoInputMaps = constructInputData(params,deliveryService);
-                        automationUtils.autoInput1(autoInputMaps);
-                        logger.info("自动录入成功！！！");
-                        file.renameTo(new File(movePath + File.separator + file.getName()));
-                        logger.info("移动路径：" + movePath + File.separator + file.getName());
+//                        deliveryMapper.addAutoInputDetails(list, createTime);
+//                        logger.info("插入数据库成功！！");
+//                        List<DetailsParams> params = deliveryMapper.getAutoInputDetails(createTime);
+//                        Map<String, List<DetailsParams>> autoInputMaps = constructInputData(params,deliveryService);
+//                        automationUtils.autoInput1(autoInputMaps);
+//                        logger.info("自动录入成功！！！");
+//                        file.renameTo(new File(movePath + File.separator + file.getName()));
+//                        logger.info("移动路径：" + movePath + File.separator + file.getName());
                     }
                 } catch (Exception e) {
                     logger.info("自动录入出错！！！！！");

@@ -23,5 +23,7 @@ public interface DeliveryMapper {
     List<Map> listGrantUser(@Param("params")Map params);
     Integer deleteUser(Integer id);
     Integer addAutoInputDetails(@Param("params") List<Map<String,String>> params,@Param("time") String time);
-    List<DetailsParams> getAutoInputDetails(@Param("createTime")String createTime);
+    List<DetailsParams> getAutoInputDetails();
+
+    Integer alterStatus(@Param("applyNum") String applyNum, @Param("sendDate") String sendDate,@Param("sendWeight") Double sendWeight, @Param("plateNo") String plateNo);
 }

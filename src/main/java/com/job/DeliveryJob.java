@@ -2,6 +2,7 @@ package com.job;
 
 
 import com.dao.goods.DeliveryMapper;
+import com.service.AutoInputService;
 import com.service.goods.DeliveryService;
 import com.utils.AutomationUtils;
 import org.slf4j.Logger;
@@ -39,6 +40,8 @@ public class DeliveryJob {
     @Autowired
     private DeliveryMapper deliveryMapper;
     // 半夜12：30跑一次 爬取发货列表
+    @Autowired
+    private AutoInputService autoInputService;
 
     private void crawlDelivery(String username, String password) {
         // 爬取发货列表
@@ -48,18 +51,11 @@ public class DeliveryJob {
         long end = System.currentTimeMillis();
     }
 
-    @Scheduled(cron = "0 0 8-20/2 * * ?")
+//    @Scheduled(cron = "0 0 8-20/2 * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void autoInput1()  {
         // 获得账号密码
-        Map<String, String> map = deliveryMapper.getUserPasw();
-        String username = map.get("username");
-        String password = map.get("password");
-        InputUtils inputUtils = new InputUtils();
-        boolean crawlOrNot = inputUtils.autoInputDetailsSingleFile(movepath,deliveryMapper,filepath, deliveryService, username, password, tonRatio);
-        if(crawlOrNot) {
-            crawlDelivery(username, password);
-        }
-
+        autoInputService.autoInput();
     }
 
 //    @Scheduled()

@@ -28,4 +28,5 @@ public interface DeliveryService {
     HttpResult listGrantUser(PageRequest pageRequest);
     Integer deleteUser(Integer id);
     Integer addAutoInputDetails(List<Map<String,String>> params);
+    Integer alterStatus(String applyNum, String sendDate, Double sendWeight, String plateNo);
 }

@@ -45,4 +45,4 @@ spring:
 filepath: C:\Users\dell\Desktop\xmciq
 movepath: C:\Users\dell\Desktop\xmciq\xmciq
 # 吨比例
-tonRatio: 1
+tonRatio: 1000

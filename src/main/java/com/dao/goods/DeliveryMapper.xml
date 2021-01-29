@@ -45,6 +45,10 @@
         <result column="delivery_status" property="deliveryStatus"></result>
         <result column="apply_num" property="applyNum"></result>
     </resultMap>
+    <update id="alterStatus">
+        update auto_input_details set status = 1
+        where send_date = #{sendDate} and no_transport = #{plateNo} and send_weight = #{sendWeight} and apply_num = #{applyNum}
+    </update>
     <select id="findDeliveryDetails" parameterType="java.lang.String" resultType="com.dao.goods.AutoInputDetails">
         select id, inspection_id as inspectionId, odd_numbers as oddNumbers, send_date as sendDate,
                "陆运" as modeTransport, "粮食专用车" as machineTransport, no_transport as noTransport,
@@ -72,12 +76,13 @@
     </select>
 
     <insert id="addAutoInputDetails">
-        insert into auto_input_details(apply_num, send_date, no_transport,send_weight, send_num, created_at,status)
+        insert into auto_input_details(apply_num, send_date, no_transport,send_weight, send_num, created_at,status,updated_at)
         values
             <foreach collection="params" separator="," item="item" >
-               ( #{item.InspectionNumber},#{item.DeliveryTime},#{item.VehicleNumber},#{item.Weight},#{item.Pcs},#{time}, 1)
+               ( #{item.InspectionNumber},#{item.DeliveryTime},#{item.VehicleNumber},#{item.Weight},#{item.Pcs},#{time}, 0,#{time})
             </foreach>
-
+        on duplicate key update
+        updated_at = values(updated_at)
     </insert>
     <insert id="add" parameterType="java.util.Map">
         insert ignore into grant_user(username, password) values(#{username}, #{password})
@@ -86,7 +91,7 @@
 
     <select id="getAutoInputDetails" resultType="com.dao.goods.DetailsParams">
         select apply_num InspectionNumber, send_date DeliveryTime, no_transport VehicleNumber,send_weight Weight,send_num Pcs from auto_input_details
-        where created_at = #{createTime}
+        where status = 0;
     </select>
 
     <select id="getDetailsByApplyNum"  resultMap="detailsMap" >
