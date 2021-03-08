@@ -42,7 +42,7 @@ spring:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.log4j.Log4jImpl
 #filepath: /Users/wuqirong/Desktop/xmciq
-filepath: C:\Users\dell\Desktop\xmciq
-movepath: C:\Users\dell\Desktop\xmciq\xmciq
+filepath: C:\Users\wql78\Desktop\xmciq
+movepath: C:\Users\wql78\Desktop\xmciq\xmciq
 # 吨比例
 tonRatio: 1000

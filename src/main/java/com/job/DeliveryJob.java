@@ -7,6 +7,7 @@ import com.service.goods.DeliveryService;
 import com.utils.AutomationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,7 @@ import java.util.Map;
 @Component
 @EnableScheduling
 @Configuration      //1.主要用于标记配置类，兼备Component的效果。
-public class DeliveryJob {
+public class DeliveryJob implements InitializingBean {
     private final Logger logger = LoggerFactory.getLogger(DeliveryJob.class);
 
     @Autowired
@@ -51,23 +52,15 @@ public class DeliveryJob {
         long end = System.currentTimeMillis();
     }
 
-//    @Scheduled(cron = "0 0 8-20/2 * * ?")
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0 8-20/2 * * ?")
+//    @Scheduled(cron = "0 0/1 * * * ?")
     public void autoInput1()  {
         // 获得账号密码
         autoInputService.autoInput();
     }
 
-//    @Scheduled()
-//    public void crawl() {
-//        crawlDelivery(username, password);
-//    }
-
-
-
-
-
-
-
-
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        autoInput1();
+    }
 }

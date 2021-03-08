@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -84,13 +85,8 @@ public class InputUtils {
     }
 
     public static void main(String[] args) {
-        try {
-            InputUtils inputUtils = new InputUtils();
-            inputUtils.readExcelGetObj("D:\\autologin\\back\\xmciq\\xmciq\\11.xlsx", 1);
-        } catch (Exception e) {
-
-        }
-
+        String s = " 2020/12/26 8:34:39";
+        System.out.println(s.trim());
     }
     public static List<Map<String,String>> readExcelGetObj(String filePath, Integer tonRatio) throws Exception {
         Workbook wb =null;
@@ -134,12 +130,19 @@ public class InputUtils {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             Date date = null;
                             try {
-                                Double dateDoubleValue = Double.parseDouble(cellData);
+                                cellData = cellData.replace(String.valueOf((char)160), "");
+                                cellData = cellData.trim();
+                                Double dateDoubleValue = Double.parseDouble(cellData.trim());
                                 date = HSSFDateUtil.getJavaDate(dateDoubleValue);
                             } catch (Exception e) {
                                 logger.info(e.getMessage());
                                 if(e.getMessage().indexOf("For input string") != -1) {
-                                    date = sdf.parse(cellData);
+                                    try {
+                                        date = sdf.parse(cellData);
+                                    } catch (ParseException innerE) {
+                                        SimpleDateFormat innerSdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                                        date = innerSdf.parse(cellData);
+                                    }
                                 }
                             }
                             cellData = sdf.format(date);
