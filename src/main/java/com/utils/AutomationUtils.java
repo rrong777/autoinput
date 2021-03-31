@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -377,7 +378,9 @@ public class AutomationUtils extends DriverManage {
                     continue;
                 }
                 WebElement wEle = list.get(index);
-                wEle.click();
+                Actions actions = new Actions(driver);
+                actions.moveToElement(wEle).click().perform();
+//                wEle.click();
                 // 切换窗口
                 switchWindow(driver, false);
                 List<DetailsParams> autoInputParams = willAutoInputDetails.get(aotuInputApplyNum);
