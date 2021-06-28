@@ -20,9 +20,9 @@ spring:
       #      url: jdbc:mysql://rm-bp1fwzre35glw0872o.mysql.rds.aliyuncs.com/auro_oa?useUnicode=true&zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=utf-8&serverTimezone=Hongkong
       #      username: root
       #      password: AuroBubu2019!
-      url: jdbc:mysql://124.70.157.93/liangshi?useUnicode=true&zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=utf-8&serverTimezone=Hongkong
-      username: dbls
-      password: 123456t
+      url: jdbc:mysql://47.97.213.177/liangshi?useUnicode=true&zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=utf-8&serverTimezone=Hongkong
+      username: root
+      password: '!Dongxue202006'
       filters: stat,wall,log4j ,config
       max-active: 100
       initial-size: 1
@@ -42,7 +42,8 @@ spring:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.log4j.Log4jImpl
 #filepath: /Users/wuqirong/Desktop/xmciq
-filepath: C:\Users\wql78\Desktop\xmciq
-movepath: C:\Users\wql78\Desktop\xmciq\xmciq
+filepath: C:\Users\dell\Desktop\xmciq
+movepath: C:\Users\dell\Desktop\xmciq\xmciq
 # 吨比例
 tonRatio: 1000
+headless: false

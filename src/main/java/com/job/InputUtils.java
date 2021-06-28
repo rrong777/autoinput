@@ -197,61 +197,6 @@ public class InputUtils {
         return cellValue;
     }
 
-    public boolean autoInputDetailsSingleFile(String movePath, DeliveryMapper deliveryMapper,
-                                              String filepath, DeliveryService deliveryService,
-                                              String username, String password, Integer tonRatio) {
-        File[] files = listFiles(filepath);
-        AutomationUtils automationUtils = new AutomationUtils(deliveryService,username, password);
-        // 是否爬虫
-        boolean crawlOrNot = files != null && files.length != 0;
-        if(crawlOrNot) {
-            for(int i = 0;i < files.length;i++) {
-                String createTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                File file = files[i];
-                try {
-                    if(file.isDirectory()) {
-                        continue;
-                    }
 
-                    List<Map<String,String>> list = null;
-                    // 读取xls文件
-                    try {
-                        list  = readExcelGetObj(file.getAbsolutePath(), tonRatio);
-                        logger.info("-------读取文件成功！读取文件：" + file.getAbsolutePath());
-                        logger.info("-------读取:" + list.size() + "条文件");
-                    } catch (Exception e) {
-                        logger.info("-------读取文件发生异常！读取文件：" + file.getAbsolutePath());
-                        logger.info(e.getMessage());
-                    }
-                    if(!Collections.isEmpty(list)) {
-//                        deliveryMapper.addAutoInputDetails(list, createTime);
-//                        logger.info("插入数据库成功！！");
-//                        List<DetailsParams> params = deliveryMapper.getAutoInputDetails(createTime);
-//                        Map<String, List<DetailsParams>> autoInputMaps = constructInputData(params,deliveryService);
-//                        automationUtils.autoInput1(autoInputMaps);
-//                        logger.info("自动录入成功！！！");
-//                        file.renameTo(new File(movePath + File.separator + file.getName()));
-//                        logger.info("移动路径：" + movePath + File.separator + file.getName());
-                    }
-                } catch (Exception e) {
-                    logger.info("自动录入出错！！！！！");
-                } finally {
-                    logger.info("结束文件：" + file.getAbsolutePath() + "的操作\n\n\n");
-                }
-            }
-        }
-        ChromeDriver driver = automationUtils.getCurrentDriver();
-        try {
-            driver.close();
-        } catch (Exception e) {
-            logger.info("关闭chrome异常出错");
-            try {
-                driver.quit();
-            } catch (Exception e1) {
-                logger.info("关闭chrome异常出错!");
-            }
-        }
-        return crawlOrNot;
-    }
 
 }

@@ -62,22 +62,34 @@ public class AutoInputService {
         if(!Collections.isEmpty(params)) {
             Map<String, List<DetailsParams>> autoInputMaps = InputUtils.constructInputData(params,deliveryService);
             AutomationUtils automationUtils = getAutomationUtils();
-            automationUtils.autoInput1(autoInputMaps);
             ChromeDriver driver = automationUtils.getCurrentDriver();
-            try {
-                driver.close();
-            } catch (Exception e) {
-                writeErrLog("关闭chrome异常出错", logfilePath, format.format(new Date()), true);
-                try {
-                    driver.quit();
-                } catch (Exception e1) {
-                    writeErrLog("闭chrome异常出错!", logfilePath, format.format(new Date()), true);
-                }
+            if(automationUtils.isLoginFlag() == false) {
+                System.out.println("一分钟内未完成登录，程序结束！！！");
+                this.quitDriver(driver);
+                return;
             }
+            automationUtils.autoInput1(autoInputMaps);
+
+
+            // 退出chromeDriver
+            this.quitDriver(driver);
             Map<String, String> name = deliveryMapper.getUserPasw();
-            automationUtils.crawlDeliveryList(name.get("username"), name.get("password"));
+//            automationUtils.crawlDeliveryList(name.get("username"), name.get("password"));
         }
 
+    }
+
+    private void quitDriver(ChromeDriver driver) {
+        try {
+            driver.close();
+        } catch (Exception e) {
+            writeErrLog("关闭chrome异常出错", logfilePath, format.format(new Date()), true);
+            try {
+                driver.quit();
+            } catch (Exception e1) {
+                writeErrLog("闭chrome异常出错!", logfilePath, format.format(new Date()), true);
+            }
+        }
     }
 
     private AutomationUtils getAutomationUtils() {

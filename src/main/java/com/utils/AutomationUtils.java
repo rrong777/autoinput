@@ -8,6 +8,7 @@ import com.service.goods.DeliveryService;
 import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -29,9 +30,7 @@ import java.util.*;
 public class AutomationUtils extends DriverManage {
     private static final Logger log = LoggerFactory.getLogger(DriverManage.class);
     // 请求url
-    private static final String URL = "http://apq.customs.gov.cn/_forms/" +
-            "default.aspx?ReturnUrl=%2f_layouts%2f15%2fAuthenticate.aspx%3f" +
-            "Source%3d%252FSitePages%252FHome%252Easpx&Source=%2FSitePages%2FHome.aspx";
+    private static final String URL = "http://apq.customs.gov.cn/SitePages/Home.aspx";
     // 用户名表单元素选择器
     private static final String USERNAME_ELE_SELECTOR = "#ctl00_PlaceHolderMain_signInControl_UserName";
     // 密码表单元素选择器
@@ -70,6 +69,12 @@ public class AutomationUtils extends DriverManage {
     // 发货说明
     private static final String intro = "table[onclientclick] > tbody > tr:last-child > td:nth-child(9) > input";
 
+    private boolean loginFlag;
+
+    public boolean isLoginFlag() {
+        return loginFlag;
+    }
+
     private ChromeDriver driver;
     private DeliveryService deliveryService;
     public AutomationUtils() {
@@ -77,12 +82,42 @@ public class AutomationUtils extends DriverManage {
 
     public AutomationUtils(DeliveryService deliveryService, String username, String password) {
         this.deliveryService = deliveryService;
-        this.driver = this.login(username, password);
-        this.enterWharfPage(driver);
+        this.driver = this.login();
+        if(this.isLoginFlag() == true) {
+            this.enterWharfPage(driver);
+        }
+    }
+
+
+
+    public void setLoginFlag(boolean loginFlag) {
+        this.loginFlag = loginFlag;
     }
 
     public AutomationUtils(DeliveryService deliveryService) {
         this.deliveryService = deliveryService;
+    }
+    private ChromeDriver login() {
+        ChromeDriver driver = getDriver();
+        try {
+            driver.get(URL);
+        } catch (Exception e) {
+            log.info("ERROR___请求超时！！！！" + URL);
+        }
+
+        for(int i = 0; i < 12; i++) {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            String pageSource = driver.getPageSource();
+            if(pageSource.indexOf("登录") == -1) {
+                this.setLoginFlag(true);
+                break;
+            }
+        }
+        return driver;
     }
 
     /**
@@ -350,8 +385,16 @@ public class AutomationUtils extends DriverManage {
     }
 
     public void autoInput1(Map<String, List<DetailsParams>> autoInputMaps) {
-        WebElement pageNumEle = driver.findElement(By.cssSelector(".tabfy td>span:nth-child(2)"));
-        Integer totalPageNum = Integer.valueOf(pageNumEle.getText());
+        WebElement pageNumEle = null;
+        Integer totalPageNum = 1;
+        try {
+            pageNumEle = driver.findElement(By.cssSelector(".tabfy td>span:nth-child(2)"));
+        } catch (NoSuchElementException e) {
+            log.info("没有页码元素，可能只有第一页！！！！");
+        }
+        if(pageNumEle != null) {
+            totalPageNum = Integer.valueOf(pageNumEle.getText());
+        }
         // 遍历所有页码，进行自动录入
         for(int i = 0;i < totalPageNum;i ++) {
             // 没有需要自动录入的数据
@@ -363,8 +406,8 @@ public class AutomationUtils extends DriverManage {
             // 本页需要自动录入的申请单号
             Map<String, List<DetailsParams>> willAutoInputDetails = this.getCurrentPageAutoInputDatas(allApplyNumList, autoInputMaps);
 
-            // 本页没有需要自动录入的
-            if(Collections.isEmpty(willAutoInputDetails)) {
+            // 不是最后一页，且本页没有需要自动录入的
+            if((i!= (totalPageNum - 1)) && Collections.isEmpty(willAutoInputDetails)) {
                 driver.findElement(By.xpath("//a[text() = '下一页']")).click();
                 continue;
             }
@@ -406,12 +449,16 @@ public class AutomationUtils extends DriverManage {
                 switchWindow(driver, true);
             }
 
-            // 下一页
-            driver.findElement(By.xpath("//a[text() = '下一页']")).click();
+            if(i != totalPageNum - 1) {
+                // 下一页
+                driver.findElement(By.xpath("//a[text() = '下一页']")).click();
+            } else {
+                // 让driver回到第一页
+                driver.findElement(By.xpath("//a[text() = '首页']")).click();
+            }
 
         }
-        // 让driver回到第一页
-        driver.findElement(By.xpath("//a[text() = '首页']")).click();
+
     }
 
     private  void  inputForm(ChromeDriver driver,

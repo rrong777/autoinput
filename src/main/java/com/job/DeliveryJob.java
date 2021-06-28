@@ -44,13 +44,7 @@ public class DeliveryJob implements InitializingBean {
     @Autowired
     private AutoInputService autoInputService;
 
-    private void crawlDelivery(String username, String password) {
-        // 爬取发货列表
-        long start = System.currentTimeMillis();
-        AutomationUtils automationUtils = new AutomationUtils(deliveryService);
-        automationUtils.crawlDeliveryList(username, password);
-        long end = System.currentTimeMillis();
-    }
+
 
     @Scheduled(cron = "0 0 8-20/2 * * ?")
 //    @Scheduled(cron = "0 0/1 * * * ?")
