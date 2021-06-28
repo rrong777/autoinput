@@ -68,7 +68,14 @@ public class AutoInputService {
                 this.quitDriver(driver);
                 return;
             }
-            automationUtils.autoInput1(autoInputMaps);
+            try{
+                automationUtils.autoInput1(autoInputMaps);
+                log.info("异常信息！！！");
+            } catch (Exception e) {
+                e.printStackTrace();
+                this.quitDriver(driver);
+            }
+
 
 
             // 退出chromeDriver
