@@ -70,8 +70,9 @@ public class AutoInputService {
             }
             try{
                 automationUtils.autoInput1(autoInputMaps);
-                log.info("异常信息！！！");
+
             } catch (Exception e) {
+                log.info("异常信息：" + e.getMessage());
                 e.printStackTrace();
                 this.quitDriver(driver);
             }
