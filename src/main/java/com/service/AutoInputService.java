@@ -64,7 +64,7 @@ public class AutoInputService {
             AutomationUtils automationUtils = getAutomationUtils();
             ChromeDriver driver = automationUtils.getCurrentDriver();
             if(automationUtils.isLoginFlag() == false) {
-                System.out.println("一分钟内未完成登录，程序结束！！！");
+                log.info("一分钟内未完成登录，程序结束！！！");
                 this.quitDriver(driver);
                 return;
             }
@@ -92,6 +92,7 @@ public class AutoInputService {
             driver.close();
         } catch (Exception e) {
             writeErrLog("关闭chrome异常出错", logfilePath, format.format(new Date()), true);
+        } finally {
             try {
                 driver.quit();
             } catch (Exception e1) {
