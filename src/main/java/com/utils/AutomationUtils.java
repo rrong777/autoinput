@@ -483,9 +483,20 @@ public class AutomationUtils extends DriverManage {
         // 填写发货时间
         if(!deliveryTime.equals("")) {
             String[] datetimeArr = DateTimeUtils.getDateHourAndMinutes(deliveryTime);
-            WebElement dateInput = driver.findElement(By.cssSelector(dateInputSelector));
-            dateInput.clear();
-            dateInput.sendKeys(datetimeArr[0]);
+            int i = 0;
+            try {
+                while(i < 3) {
+                    WebElement dateInput = driver.findElement(By.cssSelector(dateInputSelector));
+                    dateInput.clear();
+                    dateInput.sendKeys(datetimeArr[0]);
+                    i = 3;// 顺利结束就出循环
+                }
+            } catch (Exception e) {
+                i++;
+                e.printStackTrace();
+                log.info("输入时间出错: 第" + i + "次");
+            }
+
             Select hourSelect = new Select(driver.findElement(By.cssSelector(hourSelectSelector)));
             hourSelect.selectByValue(datetimeArr[1] + ":");
 //            hourSelect.selectByVisibleText(datetimeArr[1] + ":");
